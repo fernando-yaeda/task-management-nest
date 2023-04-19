@@ -1,5 +1,4 @@
 import * as bcrypt from 'bcrypt';
-import { Task } from 'src/tasks/task.entity';
 import {
   BaseEntity,
   Column,
@@ -8,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import { Task } from '../tasks/task.entity';
 
 @Entity()
 @Unique(['username'])

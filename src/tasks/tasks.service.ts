@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/auth/user.entity';
+import { User } from '../auth/user.entity';
 import { CreateTaskDTO } from './dto/create-task.dto';
 import { GetTasksFilterDTO } from './dto/get-tasks-filter.dto';
 import { TaskStatus } from './task-status.enum';
@@ -44,6 +44,7 @@ export class TasksService {
       throw new NotFoundException('Task not found');
     }
   }
+
   async updateStatus(
     id: number,
     status: TaskStatus,
