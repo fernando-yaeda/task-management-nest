@@ -1,4 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { User } from '../auth/user.entity';
+import { Task } from '../tasks/task.entity';
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -10,4 +12,14 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   entities: [__dirname + '../**/*.entity.ts'],
   synchronize: true,
   autoLoadEntities: true,
+};
+
+export const typeOrmConfigTest: TypeOrmModuleOptions = {
+  type: 'better-sqlite3',
+  database: ':memory:',
+  entities: [Task, User],
+  dropSchema: true,
+  synchronize: true,
+  autoLoadEntities: true,
+  keepConnectionAlive: false,
 };
