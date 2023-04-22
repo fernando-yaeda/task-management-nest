@@ -1,4 +1,10 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
 
@@ -9,7 +15,7 @@ export class AuthController {
   @Post('/signup')
   sighUp(
     @Body(ValidationPipe) authCredentialsDto: AuthCredentialsDTO,
-  ): Promise<void> {
+  ): Promise<void | ConflictException> {
     return this.authService.signUp(authCredentialsDto);
   }
 
