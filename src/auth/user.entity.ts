@@ -3,20 +3,30 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { Task } from '../tasks/task.entity';
 
 @Entity()
-@Unique(['username'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index({ unique: true })
   @Column()
   username: string;
+
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
+  @Index({ unique: true })
+  @Column()
+  email: string;
 
   @Column()
   password: string;
