@@ -1,10 +1,33 @@
-import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+  Validate,
+} from 'class-validator';
+import { IsUniqueConstraint } from '../validators/is-unique';
 
 export class AuthCredentialsDTO {
   @IsString()
   @MinLength(6)
   @MaxLength(16)
+  @Validate(IsUniqueConstraint, ['username'])
   username: string;
+
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @IsString()
+  @IsEmail()
+  @Validate(IsUniqueConstraint, ['email'])
+  email: string;
 
   @IsString()
   @MinLength(8)
