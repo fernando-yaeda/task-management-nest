@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.stategy';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
+import { IsUniqueConstraint } from './validators/is-unique';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { UserRepository } from './user.repository';
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserRepository, JwtStrategy],
+  providers: [AuthService, UserRepository, JwtStrategy, IsUniqueConstraint],
   exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
