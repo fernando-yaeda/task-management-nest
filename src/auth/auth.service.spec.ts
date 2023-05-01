@@ -18,6 +18,11 @@ const mockAuthCredentialsDto = {
   password: 'password',
 };
 
+const signInDto = {
+  email: 'email@email.com',
+  password: 'password',
+};
+
 describe('AuthService', () => {
   let authService;
   let jwtService;
@@ -52,28 +57,26 @@ describe('AuthService', () => {
 
   describe('signIn', () => {
     it('should return access token given valid credentials ', async () => {
-      userRepository.validateUserPassword.mockResolvedValue(
-        mockAuthCredentialsDto.username,
-      );
+      userRepository.validateUserPassword.mockResolvedValue('username');
       jwtService.sign.mockResolvedValue('access_token');
 
-      const result = await authService.signIn(mockAuthCredentialsDto);
+      const result = await authService.signIn(signInDto);
 
       expect(result).toEqual({ accessToken: 'access_token' });
       expect(userRepository.validateUserPassword).toHaveBeenCalledWith(
-        mockAuthCredentialsDto,
+        signInDto,
       );
       expect(jwtService.sign).toHaveBeenCalledWith({
-        username: mockAuthCredentialsDto.username,
+        username: 'username',
       });
     });
 
     it('should return UnauthorizedException given invalid credentials ', async () => {
       userRepository.validateUserPassword.mockResolvedValue(null);
 
-      await expect(
-        authService.signIn(mockAuthCredentialsDto),
-      ).rejects.toThrowError(new UnauthorizedException('Invalid credentials'));
+      await expect(authService.signIn(signInDto)).rejects.toThrowError(
+        new UnauthorizedException('Invalid credentials'),
+      );
     });
   });
 });

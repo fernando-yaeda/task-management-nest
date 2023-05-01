@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { DataSource, Repository } from 'typeorm';
 import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
+import { SignInDTO } from './dto/sign-in.dto';
 import { User } from './user.entity';
 
 @Injectable()
@@ -33,11 +34,9 @@ export class UserRepository extends Repository<User> {
     }
   }
 
-  async validateUserPassword(
-    authCredentialsDto: AuthCredentialsDTO,
-  ): Promise<string> {
-    const { username, password } = authCredentialsDto;
-    const user = await this.findOneBy({ username });
+  async validateUserPassword(signInDto: SignInDTO): Promise<string> {
+    const { email, password } = signInDto;
+    const user = await this.findOneBy({ email });
 
     if (user && (await user.validatePassword(password))) {
       return user.username;

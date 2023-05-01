@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfigTest } from '../config/typeorm.config';
 import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
+import { SignInDTO } from './dto/sign-in.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
@@ -12,6 +13,11 @@ describe('UserRepository', () => {
     username: 'username',
     firstName: 'firstName',
     lastName: 'lastName',
+    email: 'email@email.com',
+    password: 'password',
+  };
+
+  const signInDto: SignInDTO = {
     email: 'email@email.com',
     password: 'password',
   };
@@ -64,7 +70,8 @@ describe('UserRepository', () => {
 
     beforeEach(() => {
       user = new User();
-      user.username = authCredentialsDto.username;
+      user.username = 'username';
+      user.email = signInDto.email;
       user.validatePassword = jest.fn();
     });
 
@@ -72,9 +79,7 @@ describe('UserRepository', () => {
       jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(user);
       jest.spyOn(user, 'validatePassword').mockResolvedValue(true);
 
-      const result = await userRepository.validateUserPassword(
-        authCredentialsDto,
-      );
+      const result = await userRepository.validateUserPassword(signInDto);
 
       expect(result).toEqual(user.username);
     });
@@ -82,9 +87,7 @@ describe('UserRepository', () => {
     it('should return null when user is not found', async () => {
       jest.spyOn(userRepository, 'findOneBy').mockReturnValue(undefined);
 
-      const result = await userRepository.validateUserPassword(
-        authCredentialsDto,
-      );
+      const result = await userRepository.validateUserPassword(signInDto);
 
       expect(user.validatePassword).not.toHaveBeenCalled();
       expect(result).toEqual(null);
@@ -94,9 +97,7 @@ describe('UserRepository', () => {
       jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(user);
       jest.spyOn(user, 'validatePassword').mockResolvedValue(false);
 
-      const result = await userRepository.validateUserPassword(
-        authCredentialsDto,
-      );
+      const result = await userRepository.validateUserPassword(signInDto);
 
       expect(result).toEqual(null);
     });
