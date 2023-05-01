@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { DataSource, Repository } from 'typeorm';
 import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
@@ -19,21 +15,20 @@ export class UserRepository extends Repository<User> {
   }
 
   async signUp(authCredentialsDto: AuthCredentialsDTO): Promise<void> {
-    const { username, password } = authCredentialsDto;
+    const { username, firstName, lastName, email, password } =
+      authCredentialsDto;
 
     const user = this.create();
     user.username = username;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(password, user.salt);
 
     try {
       await this.save(user);
     } catch (err) {
-      // duplicate username code
-      if (err.code === '23505') {
-        throw new ConflictException('Username already in use');
-      }
-
       throw new InternalServerErrorException();
     }
   }

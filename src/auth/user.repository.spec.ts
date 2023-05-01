@@ -1,7 +1,4 @@
-import {
-  ConflictException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfigTest } from '../config/typeorm.config';
@@ -13,6 +10,9 @@ describe('UserRepository', () => {
   let userRepository: UserRepository;
   const authCredentialsDto: AuthCredentialsDTO = {
     username: 'username',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    email: 'email@email.com',
     password: 'password',
   };
 
@@ -36,26 +36,17 @@ describe('UserRepository', () => {
 
       await expect(userRepository.count()).resolves.toEqual(1);
       await expect(userRepository.find({ where: { id: 1 } })).resolves.toEqual([
-        expect.objectContaining({
+        {
           id: 1,
           username: 'username',
+          firstName: 'firstName',
+          lastName: 'lastName',
+          email: 'email@email.com',
           password: expect.any(String),
           salt: expect.any(String),
           tasks: expect.any(Array),
-        }),
+        },
       ]);
-    });
-
-    it('should throw an conclict error if username was already taken', async () => {
-      await userRepository.signUp(authCredentialsDto);
-
-      // sqlite unique constratint error code is different than postgres
-      jest.spyOn(userRepository, 'save').mockRejectedValue({ code: '23505' });
-
-      await expect(userRepository.signUp(authCredentialsDto)).rejects.toThrow(
-        ConflictException,
-      );
-      await expect(userRepository.count()).resolves.toEqual(1);
     });
 
     it('should throw internal server error given unhandled error code', async () => {
