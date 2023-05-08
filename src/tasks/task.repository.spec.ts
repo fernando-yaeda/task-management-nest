@@ -28,6 +28,9 @@ describe('TaskRepository', () => {
       {
         id: 1,
         username: 'username',
+        email: 'email@email.com',
+        firstName: 'firstName',
+        lastName: 'lastName',
         password: 'password',
         salt: 'salt',
       },
@@ -84,6 +87,9 @@ describe('TaskRepository', () => {
       await userRepository.insert({
         id: 2,
         username: 'username2',
+        email: 'email2@email.com',
+        firstName: 'firstName2',
+        lastName: 'lastName2',
         password: 'password2',
         salt: 'salt2',
       });

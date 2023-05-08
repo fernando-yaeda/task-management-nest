@@ -71,17 +71,19 @@ describe('UserRepository', () => {
     beforeEach(() => {
       user = new User();
       user.username = 'username';
+      user.firstName = 'firstName';
+      user.lastName = 'lastName';
       user.email = signInDto.email;
       user.validatePassword = jest.fn();
     });
 
-    it('should return the username if validation succed', async () => {
+    it('should return the user without sensitive data and tasks if validation succed', async () => {
       jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(user);
       jest.spyOn(user, 'validatePassword').mockResolvedValue(true);
 
       const result = await userRepository.validateUserPassword(signInDto);
 
-      expect(result).toEqual(user.username);
+      expect(result).toEqual(user);
     });
 
     it('should return null when user is not found', async () => {
