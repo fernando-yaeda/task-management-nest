@@ -34,12 +34,17 @@ export class UserRepository extends Repository<User> {
     }
   }
 
-  async validateUserPassword(signInDto: SignInDTO): Promise<string> {
+  async validateUserPassword(
+    signInDto: SignInDTO,
+  ): Promise<Omit<User, 'password' | 'salt' | 'tasks'> | null> {
     const { email, password } = signInDto;
     const user = await this.findOneBy({ email });
 
     if (user && (await user.validatePassword(password))) {
-      return user.username;
+      delete user.password;
+      delete user.salt;
+      delete user.tasks;
+      return user;
     } else return null;
   }
 }
