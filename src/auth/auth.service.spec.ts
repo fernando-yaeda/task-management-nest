@@ -15,6 +15,9 @@ const mockJwtService = () => ({
 
 const mockAuthCredentialsDto = {
   username: 'username',
+  email: 'email@email.com',
+  fistName: 'firsName',
+  lastName: 'lastName',
   password: 'password',
 };
 
@@ -56,13 +59,18 @@ describe('AuthService', () => {
   });
 
   describe('signIn', () => {
-    it('should return access token given valid credentials ', async () => {
-      userRepository.validateUserPassword.mockResolvedValue('username');
+    it('should return user and access token given valid credentials ', async () => {
+      userRepository.validateUserPassword.mockResolvedValue({
+        username: 'username',
+      });
       jwtService.sign.mockResolvedValue('access_token');
 
       const result = await authService.signIn(signInDto);
 
-      expect(result).toEqual({ accessToken: 'access_token' });
+      expect(result).toEqual({
+        user: { username: 'username' },
+        token: 'access_token',
+      });
       expect(userRepository.validateUserPassword).toHaveBeenCalledWith(
         signInDto,
       );
