@@ -3,9 +3,34 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../auth/user.entity';
 import { UserRepository } from '../auth/user.repository';
 import { typeOrmConfigTest } from '../config/typeorm.config';
+import { CreateTaskDTO } from './dto/create-task.dto';
 import { TaskStatus } from './task-status.enum';
 import { Task } from './task.entity';
 import { TaskRepository } from './task.repository';
+
+const dateMock: Date = new Date();
+const createCardDataset: CreateTaskDTO[] = [
+  {
+    title: 'title',
+    description: 'description',
+    dueDate: dateMock,
+  },
+  {
+    title: 'title',
+    description: null,
+    dueDate: null,
+  },
+  {
+    title: 'title',
+    description: null,
+    dueDate: dateMock,
+  },
+  {
+    title: 'title',
+    description: 'description',
+    dueDate: null,
+  },
+];
 
 describe('TaskRepository', () => {
   let userRepository: UserRepository;
@@ -40,24 +65,24 @@ describe('TaskRepository', () => {
   });
 
   describe('createTask', () => {
-    it('should return created task', async () => {
-      const createTaskDto = { title: 'title', description: 'description' };
+    it.each(createCardDataset)(
+      'should return correctly return created task',
+      async (createTaskDto: CreateTaskDTO) => {
+        jest.spyOn(taskRepository, 'create').mockReturnValue(new Task());
 
-      jest.spyOn(taskRepository, 'create').mockReturnValue(new Task());
+        const task = await taskRepository.createTask(createTaskDto, user);
 
-      const task = await taskRepository.createTask(createTaskDto, user);
-
-      expect(task).toEqual({
-        id: 1,
-        title: 'title',
-        description: 'description',
-        status: TaskStatus.OPEN,
-        userId: user.id,
-      });
-      expect(
-        taskRepository.find({ where: { id: task.id } }),
-      ).resolves.toBeDefined();
-    });
+        expect(task).toEqual({
+          ...createTaskDto,
+          id: 1,
+          status: TaskStatus.OPEN,
+          userId: user.id,
+        });
+        expect(
+          taskRepository.find({ where: { id: task.id } }),
+        ).resolves.toBeDefined();
+      },
+    );
   });
 
   describe('get', () => {
@@ -70,6 +95,7 @@ describe('TaskRepository', () => {
           id: 1,
           title: 'title-open',
           description: 'description',
+          dueDate: null,
           status: TaskStatus.OPEN,
           userId: user.id,
         },
@@ -77,6 +103,7 @@ describe('TaskRepository', () => {
           id: 2,
           title: 'title-done',
           description: 'description',
+          dueDate: null,
           status: TaskStatus.DONE,
           userId: user.id,
         },
@@ -98,6 +125,7 @@ describe('TaskRepository', () => {
         id: 3,
         title: 'title-open',
         description: 'description',
+        dueDate: null,
         status: TaskStatus.OPEN,
         userId: 2,
       });
