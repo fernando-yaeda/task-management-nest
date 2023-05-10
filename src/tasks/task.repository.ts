@@ -13,11 +13,12 @@ export class TaskRepository extends Repository<Task> {
   }
 
   async createTask(createTaskDto: CreateTaskDTO, user: User): Promise<Task> {
-    const { title, description } = createTaskDto;
+    const { title, description, dueDate } = createTaskDto;
 
     const task = this.create();
     task.title = title;
     task.description = description;
+    task.dueDate = dueDate;
     task.status = TaskStatus.OPEN;
     task.user = user;
     await task.save();
