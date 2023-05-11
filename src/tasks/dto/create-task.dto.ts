@@ -16,5 +16,5 @@ export class CreateTaskDTO {
 
   @IsOptional()
   @IsDateString()
-  dueDate?: Date | null;
+  dueDate?: string | null;
 }

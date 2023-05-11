@@ -19,8 +19,8 @@ export class Task extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ nullable: true })
-  dueDate: Date;
+  @Column({ nullable: true, type: 'timestamptz' })
+  dueDate: string;
 
   @Column()
   status: TaskStatus;
