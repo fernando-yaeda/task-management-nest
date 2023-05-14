@@ -14,7 +14,7 @@ import { IsUniqueConstraint } from './validators/is-unique';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: 'top-secret',
-      signOptions: { expiresIn: 3600 },
+      signOptions: { expiresIn: 36000 },
     }),
     TypeOrmModule.forFeature([User]),
   ],

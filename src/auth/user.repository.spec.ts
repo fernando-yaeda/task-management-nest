@@ -56,7 +56,8 @@ describe('UserRepository', () => {
           email: 'email@email.com',
           password: expect.any(String),
           salt: expect.any(String),
-          tasks: expect.any(Array),
+          tasks: [],
+          projects: [],
         },
       ]);
     });
