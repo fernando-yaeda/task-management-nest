@@ -1,4 +1,4 @@
-export enum taskOrderBy {
+export enum TaskSortBy {
   ID = 'id',
   TITLE = 'title',
   DESCRIPTION = 'description',
