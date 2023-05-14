@@ -18,7 +18,7 @@ export class TaskRepository extends Repository<Task> {
     const task = this.create();
     task.title = title;
     task.description = description;
-    task.dueDate = dueDate;
+    task.dueDate = dueDate && new Date(dueDate);
     task.status = TaskStatus.OPEN;
     task.user = user;
     await task.save();
