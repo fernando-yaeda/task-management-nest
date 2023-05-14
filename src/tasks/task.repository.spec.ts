@@ -1,14 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import 'jest-extended';
 import { User } from '../auth/user.entity';
 import { UserRepository } from '../auth/user.repository';
 import { typeOrmConfigTest } from '../config/typeorm.config';
 import { CreateTaskDTO } from './dto/create-task.dto';
+import { TaskSortBy } from './task-sort-by.enum';
 import { TaskStatus } from './task-status.enum';
 import { Task } from './task.entity';
 import { TaskRepository } from './task.repository';
 
-const dateMock: Date = new Date();
+const dateMock = new Date().toISOString();
 const createCardDataset: CreateTaskDTO[] = [
   {
     title: 'title',
@@ -35,10 +37,11 @@ const createCardDataset: CreateTaskDTO[] = [
 describe('TaskRepository', () => {
   let userRepository: UserRepository;
   let taskRepository: TaskRepository;
+  let module: TestingModule;
   let user: User;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(typeOrmConfigTest),
         TypeOrmModule.forFeature([Task, User]),
@@ -64,16 +67,19 @@ describe('TaskRepository', () => {
     user = await userRepository.findOne({ where: { id: 1 } });
   });
 
+  afterAll(async () => {
+    await module.close();
+  });
+
   describe('createTask', () => {
     it.each(createCardDataset)(
       'should return correctly return created task',
       async (createTaskDto: CreateTaskDTO) => {
-        jest.spyOn(taskRepository, 'create').mockReturnValue(new Task());
-
         const task = await taskRepository.createTask(createTaskDto, user);
 
-        expect(task).toEqual({
+        expect(task).toMatchObject({
           ...createTaskDto,
+          dueDate: expect.toBeOneOf([null, expect.any(Date)]),
           id: 1,
           status: TaskStatus.OPEN,
           userId: user.id,
@@ -81,21 +87,24 @@ describe('TaskRepository', () => {
         expect(
           taskRepository.find({ where: { id: task.id } }),
         ).resolves.toBeDefined();
+        if (task.dueDate) {
+          expect(task.dueDate.toISOString()).toEqual(dateMock);
+        }
       },
     );
   });
 
   describe('get', () => {
-    let userTasks;
+    let userTasks: Partial<Task>[];
 
     beforeEach(async () => {
       // create user tasks
-      userTasks = [
+      const userTasksData = [
         {
           id: 1,
           title: 'title-open',
           description: 'description',
-          dueDate: null,
+          dueDate: new Date(23, 5, 14),
           status: TaskStatus.OPEN,
           userId: user.id,
         },
@@ -104,11 +113,20 @@ describe('TaskRepository', () => {
           title: 'title-done',
           description: 'description',
           dueDate: null,
+          status: TaskStatus.IN_PROGRESS,
+          userId: user.id,
+        },
+        {
+          id: 3,
+          title: 'title-done',
+          description: 'description',
+          dueDate: new Date(23, 5, 15),
           status: TaskStatus.DONE,
           userId: user.id,
         },
       ];
-      await taskRepository.insert(userTasks);
+      await taskRepository.insert(userTasksData);
+      userTasks = await taskRepository.find();
 
       // creates another user to test that it only returns the requester tasks
       await userRepository.insert({
@@ -137,20 +155,30 @@ describe('TaskRepository', () => {
         user,
       );
 
-      expect(tasks.length).toEqual(2);
+      expect(tasks.length).toEqual(3);
       expect(tasks[0]).toEqual(userTasks[0]);
       expect(tasks[1]).toEqual(userTasks[1]);
+      expect(tasks[2]).toEqual(userTasks[2]);
     });
 
-    it("should return user's tasks by status", async () => {
-      const tasks = await taskRepository.get(
-        { status: TaskStatus.DONE, search: null },
-        user,
-      );
+    const taskStatusDataset = [
+      TaskStatus.OPEN,
+      TaskStatus.IN_PROGRESS,
+      TaskStatus.DONE,
+    ];
 
-      expect(tasks.length).toEqual(1);
-      expect(tasks[0]).toEqual(userTasks[1]);
-    });
+    it.each(taskStatusDataset)(
+      "should return user's tasks by status",
+      async (status) => {
+        const tasks = await taskRepository.get(
+          { status: status, search: null },
+          user,
+        );
+
+        expect(tasks.length).toEqual(1);
+        expect(tasks[0].status).toEqual(status);
+      },
+    );
 
     it("should return user's tasks by search", async () => {
       const tasks = await taskRepository.get(
@@ -160,6 +188,22 @@ describe('TaskRepository', () => {
 
       expect(tasks.length).toEqual(1);
       expect(tasks[0]).toEqual(userTasks[0]);
+    });
+
+    it("should return user's tasks by dueDate orderedBy ASC ", async () => {
+      const tasks = await taskRepository.get(
+        {
+          status: null,
+          search: null,
+          sortBy: TaskSortBy.DUEDATE,
+          orderBy: 'ASC',
+        },
+        user,
+      );
+
+      tasks.map((task) => new Date(task.dueDate).toISOString());
+
+      expect(tasks.length).toEqual(3);
     });
   });
 
