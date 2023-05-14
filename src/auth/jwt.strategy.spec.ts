@@ -1,5 +1,5 @@
 import { UnauthorizedException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { JwtStrategy } from './jwt.stategy';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
@@ -10,10 +10,11 @@ const mockUserRepository = () => ({
 
 describe('JwtStrategy', () => {
   let jwtStrategy: JwtStrategy;
+  let module: TestingModule;
   let userRepository;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         JwtStrategy,
         {
@@ -25,6 +26,10 @@ describe('JwtStrategy', () => {
 
     jwtStrategy = module.get<JwtStrategy>(JwtStrategy);
     userRepository = module.get<UserRepository>(UserRepository);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   describe('validate', () => {

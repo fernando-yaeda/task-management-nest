@@ -1,4 +1,5 @@
-import { IsIn, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum, IsIn, IsNotEmpty, IsOptional } from 'class-validator';
+import { TaskSortBy } from '../task-sort-by.enum';
 import { TaskStatus } from '../task-status.enum';
 
 export class GetTasksFilterDTO {
@@ -9,4 +10,12 @@ export class GetTasksFilterDTO {
   @IsOptional()
   @IsNotEmpty()
   search: string;
+
+  @IsOptional()
+  @IsEnum(TaskSortBy)
+  sortBy?: TaskSortBy;
+
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
+  orderBy?: 'ASC' | 'DESC';
 }

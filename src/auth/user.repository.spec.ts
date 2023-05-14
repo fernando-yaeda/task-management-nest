@@ -9,6 +9,8 @@ import { UserRepository } from './user.repository';
 
 describe('UserRepository', () => {
   let userRepository: UserRepository;
+  let module: TestingModule;
+
   const authCredentialsDto: AuthCredentialsDTO = {
     username: 'username',
     firstName: 'firstName',
@@ -23,7 +25,7 @@ describe('UserRepository', () => {
   };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(typeOrmConfigTest),
         TypeOrmModule.forFeature([User]),
@@ -32,6 +34,10 @@ describe('UserRepository', () => {
     }).compile();
 
     userRepository = module.get<UserRepository>(UserRepository);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   describe('signUp', () => {

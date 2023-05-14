@@ -13,11 +13,12 @@ export class TaskRepository extends Repository<Task> {
   }
 
   async createTask(createTaskDto: CreateTaskDTO, user: User): Promise<Task> {
-    const { title, description } = createTaskDto;
+    const { title, description, dueDate } = createTaskDto;
 
     const task = this.create();
     task.title = title;
     task.description = description;
+    task.dueDate = dueDate && new Date(dueDate);
     task.status = TaskStatus.OPEN;
     task.user = user;
     await task.save();
@@ -28,7 +29,7 @@ export class TaskRepository extends Repository<Task> {
   }
 
   async get(filterDto: GetTasksFilterDTO, user: User): Promise<Task[]> {
-    const { status, search } = filterDto;
+    const { status, search, sortBy, orderBy } = filterDto;
     const query = this.createQueryBuilder('task');
 
     query.where('task.userId = :userId', { userId: user.id });
@@ -42,6 +43,10 @@ export class TaskRepository extends Repository<Task> {
         '(task.title LIKE :search OR task.description LIKE :search)',
         { search: `%${search}%` },
       );
+    }
+
+    if (sortBy && orderBy) {
+      query.orderBy(`task.${sortBy}`, `${orderBy}`);
     }
 
     const tasks = await query.getMany();

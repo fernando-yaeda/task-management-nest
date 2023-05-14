@@ -1,6 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UserRepository } from './user.repository';
 
@@ -30,9 +30,10 @@ describe('AuthService', () => {
   let authService;
   let jwtService;
   let userRepository;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: UserRepository, useFactory: mockUserRepository },
@@ -43,6 +44,10 @@ describe('AuthService', () => {
     authService = module.get<AuthService>(AuthService);
     jwtService = module.get<JwtService>(JwtService);
     userRepository = module.get<UserRepository>(UserRepository);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   describe('signUp', () => {
