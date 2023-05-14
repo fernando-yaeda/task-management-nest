@@ -1,5 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { GetTasksFilterDTO } from './dto/get-tasks-filter.dto';
 import { TaskStatus } from './task-status.enum';
 import { TaskRepository } from './task.repository';
@@ -18,9 +18,10 @@ const mockTaskRepository = () => ({
 describe('TasksService', () => {
   let tasksService;
   let taskRepository;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         TasksService,
         { provide: TaskRepository, useFactory: mockTaskRepository },
@@ -29,6 +30,10 @@ describe('TasksService', () => {
 
     tasksService = module.get<TasksService>(TasksService);
     taskRepository = module.get<TaskRepository>(TaskRepository);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   describe('get', () => {
