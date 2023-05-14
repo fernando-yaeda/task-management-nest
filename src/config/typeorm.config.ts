@@ -15,8 +15,12 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
 };
 
 export const typeOrmConfigTest: TypeOrmModuleOptions = {
-  type: 'better-sqlite3',
-  database: ':memory:',
+  type: 'postgres',
+  host: 'localhost',
+  port: 5432,
+  username: 'postgres',
+  password: '123456',
+  database: 'task-management-test',
   entities: [Task, User],
   dropSchema: true,
   synchronize: true,
