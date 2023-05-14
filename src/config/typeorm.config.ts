@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from '../auth/user.entity';
+import { Project } from '../projects/project.entity';
 import { Task } from '../tasks/task.entity';
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
@@ -21,7 +22,7 @@ export const typeOrmConfigTest: TypeOrmModuleOptions = {
   username: 'postgres',
   password: '123456',
   database: 'task-management-test',
-  entities: [Task, User],
+  entities: [Task, User, Project],
   dropSchema: true,
   synchronize: true,
   autoLoadEntities: true,
