@@ -20,7 +20,7 @@ export class Task extends BaseEntity {
   description: string;
 
   @Column({ nullable: true, type: 'timestamptz' })
-  dueDate: string;
+  dueDate: Date;
 
   @Column()
   status: TaskStatus;
