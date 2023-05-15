@@ -12,7 +12,7 @@ import { TasksModule } from './tasks/tasks.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NDE_ENV
+      envFilePath: process.env.NODE_ENV
         ? `.${process.env.NODE_ENV}.env`
         : '.env',
     }),
