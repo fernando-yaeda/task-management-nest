@@ -12,7 +12,9 @@ import { TasksModule } from './tasks/tasks.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.${process.env.NODE_ENV}.env`,
+      envFilePath: process.env.NDE_ENV
+        ? `.${process.env.NODE_ENV}.env`
+        : '.env',
     }),
     TypeOrmModule.forRootAsync({
       imports: [SharedModule],
