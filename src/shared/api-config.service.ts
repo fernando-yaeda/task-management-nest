@@ -40,7 +40,6 @@ export class ApiConfigService {
 
   private getString(key: string): string {
     const value = this.get(key);
-    console.log(key, value);
 
     return value.replace(/\\n/g, '\n');
   }
