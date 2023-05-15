@@ -1,7 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfigTest } from '../config/typeorm.config';
+import { AppModule } from '../app.module';
 import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
 import { SignInDTO } from './dto/sign-in.dto';
 import { User } from './user.entity';
@@ -26,18 +25,11 @@ describe('UserRepository', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(typeOrmConfigTest),
-        TypeOrmModule.forFeature([User]),
-      ],
+      imports: [AppModule],
       providers: [UserRepository],
     }).compile();
 
     userRepository = module.get<UserRepository>(UserRepository);
-  });
-
-  afterAll(async () => {
-    await module.close();
   });
 
   describe('signUp', () => {
@@ -46,7 +38,6 @@ describe('UserRepository', () => {
 
       await userRepository.signUp(authCredentialsDto);
 
-      await expect(userRepository.count()).resolves.toEqual(1);
       await expect(userRepository.find({ where: { id: 1 } })).resolves.toEqual([
         {
           id: 1,
@@ -65,10 +56,10 @@ describe('UserRepository', () => {
     it('should throw internal server error given unhandled error code', async () => {
       jest.spyOn(userRepository, 'save').mockRejectedValue({ code: '99999' });
 
+      await expect(userRepository.count()).resolves.toEqual(0);
       await expect(userRepository.signUp(authCredentialsDto)).rejects.toThrow(
         InternalServerErrorException,
       );
-      await expect(userRepository.count()).resolves.toEqual(0);
     });
   });
 

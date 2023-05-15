@@ -1,5 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ApiConfigService } from '../shared/api-config.service';
 import { JwtStrategy } from './jwt.stategy';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
@@ -8,9 +9,15 @@ const mockUserRepository = () => ({
   findOneBy: jest.fn(),
 });
 
+const mockApiConfigService = () => ({
+  authConfig: {
+    jwtSecret: 'secret',
+  },
+});
+
 describe('JwtStrategy', () => {
-  let jwtStrategy: JwtStrategy;
   let module: TestingModule;
+  let jwtStrategy: JwtStrategy;
   let userRepository;
 
   beforeEach(async () => {
@@ -20,6 +27,10 @@ describe('JwtStrategy', () => {
         {
           provide: UserRepository,
           useFactory: mockUserRepository,
+        },
+        {
+          provide: ApiConfigService,
+          useFactory: mockApiConfigService,
         },
       ],
     }).compile();

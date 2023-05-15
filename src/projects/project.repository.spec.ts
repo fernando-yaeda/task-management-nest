@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppModule } from '../app.module';
 import { User } from '../auth/user.entity';
 import { UserRepository } from '../auth/user.repository';
-import { typeOrmConfigTest } from '../config/typeorm.config';
 import { CreateProjectDTO } from './dto/create-project.dto';
 import { Project } from './project.entity';
 import { ProjectRepository } from './project.repository';
@@ -22,13 +21,11 @@ describe('ProjectRepository', () => {
   let userRepository: UserRepository;
   let projectRepository: ProjectRepository;
   let user: User;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(typeOrmConfigTest),
-        TypeOrmModule.forFeature([Project, User]),
-      ],
+    module = await Test.createTestingModule({
+      imports: [AppModule],
       providers: [ProjectRepository, UserRepository],
     }).compile();
 

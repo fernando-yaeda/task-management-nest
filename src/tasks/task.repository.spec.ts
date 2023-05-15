@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import 'jest-extended';
+import { AppModule } from '../app.module';
 import { User } from '../auth/user.entity';
 import { UserRepository } from '../auth/user.repository';
-import { typeOrmConfigTest } from '../config/typeorm.config';
 import { CreateTaskDTO } from './dto/create-task.dto';
 import { TaskSortBy } from './task-sort-by.enum';
 import { TaskStatus } from './task-status.enum';
@@ -42,10 +41,7 @@ describe('TaskRepository', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(typeOrmConfigTest),
-        TypeOrmModule.forFeature([Task, User]),
-      ],
+      imports: [AppModule],
       providers: [TaskRepository, UserRepository],
     }).compile();
 
