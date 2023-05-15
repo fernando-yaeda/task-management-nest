@@ -1,4 +1,6 @@
 # compiled output
+.development.env
+.test.env
 /dist
 /node_modules
 
