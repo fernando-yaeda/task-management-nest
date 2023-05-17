@@ -11,7 +11,13 @@ export class CreateDatabaseTables1684179648712 implements MigrationInterface {
       new Table({
         name: 'user',
         columns: [
-          { name: 'id', type: 'int', isPrimary: true },
+          {
+            name: 'id',
+            type: 'int',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
           { name: 'username', type: 'varchar', isUnique: true },
           { name: 'firstName', type: 'varchar' },
           { name: 'lastName', type: 'varchar' },
@@ -27,7 +33,13 @@ export class CreateDatabaseTables1684179648712 implements MigrationInterface {
       new Table({
         name: 'task',
         columns: [
-          { name: 'id', type: 'int', isPrimary: true },
+          {
+            name: 'id',
+            type: 'int',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
           { name: 'title', type: 'varchar' },
           { name: 'description', type: 'varchar', isNullable: true },
           { name: 'dueDate', type: 'timestamptz', isNullable: true },
@@ -52,7 +64,13 @@ export class CreateDatabaseTables1684179648712 implements MigrationInterface {
       new Table({
         name: 'project',
         columns: [
-          { name: 'id', type: 'int', isPrimary: true },
+          {
+            name: 'id',
+            type: 'int',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
           { name: 'title', type: 'varchar' },
           { name: 'description', type: 'varchar', isNullable: true },
           { name: 'userId', type: 'int' },
