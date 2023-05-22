@@ -1,8 +1,10 @@
+import { Board } from '@/boards/board.entity';
 import {
   BaseEntity,
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../auth/user.entity';
@@ -18,8 +20,11 @@ export class Project extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @ManyToOne((type) => User, (user) => user.projects, { eager: false })
+  @ManyToOne((_type) => User, (user) => user.projects, { eager: false })
   user: User;
+
+  @OneToMany((_type) => Board, (board) => board.project, { eager: true })
+  boards: Board[];
 
   @Column()
   userId: number;

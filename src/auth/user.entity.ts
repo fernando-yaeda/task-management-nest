@@ -1,3 +1,4 @@
+import { Board } from '@/boards/board.entity';
 import * as bcrypt from 'bcrypt';
 import {
   BaseEntity,
@@ -35,11 +36,14 @@ export class User extends BaseEntity {
   @Column()
   salt: string;
 
-  @OneToMany((type) => Task, (task) => task.user, { eager: true })
-  tasks: Task[];
-
   @OneToMany((type) => Project, (project) => project.user, { eager: true })
   projects: Project[];
+
+  @OneToMany((type) => Board, (board) => board.user, { eager: true })
+  boards: Board[];
+
+  @OneToMany((type) => Task, (task) => task.user, { eager: true })
+  tasks: Task[];
 
   async validatePassword(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);
