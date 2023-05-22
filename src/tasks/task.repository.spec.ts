@@ -1,3 +1,7 @@
+import { Board } from '@/boards/board.entity';
+import { BoardRepository } from '@/boards/board.repository';
+import { Project } from '@/projects/project.entity';
+import { ProjectRepository } from '@/projects/project.repository';
 import { Test, TestingModule } from '@nestjs/testing';
 import 'jest-extended';
 import { AppModule } from '../app.module';
@@ -15,37 +19,47 @@ const createCardDataset: CreateTaskDTO[] = [
     title: 'title',
     description: 'description',
     dueDate: dateMock,
+    boardId: 1,
   },
   {
     title: 'title',
     description: null,
     dueDate: null,
+    boardId: 1,
   },
   {
     title: 'title',
     description: null,
     dueDate: dateMock,
+    boardId: 1,
   },
   {
     title: 'title',
     description: 'description',
     dueDate: null,
+    boardId: 1,
   },
 ];
 
 describe('TaskRepository', () => {
   let userRepository: UserRepository;
   let taskRepository: TaskRepository;
+  let boardRepository: BoardRepository;
+  let projectRepository: ProjectRepository;
   let module: TestingModule;
   let user: User;
+  let board: Board;
+  let project: Project;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [AppModule],
-      providers: [TaskRepository, UserRepository],
+      providers: [TaskRepository, UserRepository, BoardRepository],
     }).compile();
 
     taskRepository = module.get<TaskRepository>(TaskRepository);
+    projectRepository = module.get<ProjectRepository>(ProjectRepository);
+    boardRepository = module.get<BoardRepository>(BoardRepository);
     userRepository = module.get<UserRepository>(UserRepository);
 
     await userRepository.insert([
@@ -61,6 +75,23 @@ describe('TaskRepository', () => {
     ]);
 
     user = await userRepository.findOne({ where: { id: 1 } });
+
+    await projectRepository.insert({
+      id: 1,
+      title: 'project-title',
+      userId: 1,
+    });
+
+    project = await projectRepository.findOne({ where: { id: 1 } });
+
+    await boardRepository.insert({
+      id: 1,
+      title: 'board-title',
+      projectId: 1,
+      userId: 1,
+    });
+
+    board = await boardRepository.findOne({ where: { id: 1 } });
   });
 
   afterAll(async () => {
@@ -79,6 +110,7 @@ describe('TaskRepository', () => {
           id: 1,
           status: TaskStatus.OPEN,
           userId: user.id,
+          boardId: board.id,
         });
         expect(
           taskRepository.find({ where: { id: task.id } }),
@@ -103,6 +135,7 @@ describe('TaskRepository', () => {
           dueDate: new Date(23, 5, 14),
           status: TaskStatus.OPEN,
           userId: user.id,
+          boardId: board.id,
         },
         {
           id: 2,
@@ -111,6 +144,7 @@ describe('TaskRepository', () => {
           dueDate: null,
           status: TaskStatus.IN_PROGRESS,
           userId: user.id,
+          boardId: board.id,
         },
         {
           id: 3,
@@ -119,6 +153,7 @@ describe('TaskRepository', () => {
           dueDate: new Date(23, 5, 15),
           status: TaskStatus.DONE,
           userId: user.id,
+          boardId: board.id,
         },
       ];
       await taskRepository.insert(userTasksData);
@@ -135,6 +170,21 @@ describe('TaskRepository', () => {
         salt: 'salt2',
       });
 
+      await projectRepository.insert({
+        id: 2,
+        title: 'project-title',
+        description: 'description',
+        userId: 2,
+      });
+
+      await boardRepository.insert({
+        id: 2,
+        title: 'board-title',
+        description: 'description',
+        userId: 2,
+        projectId: 2,
+      });
+
       await taskRepository.insert({
         id: 3,
         title: 'title-open',
@@ -142,6 +192,7 @@ describe('TaskRepository', () => {
         dueDate: null,
         status: TaskStatus.OPEN,
         userId: 2,
+        boardId: 2,
       });
     });
 
@@ -211,6 +262,7 @@ describe('TaskRepository', () => {
         description: 'description',
         status: TaskStatus.OPEN,
         userId: user.id,
+        boardId: board.id,
       });
     });
 

@@ -49,6 +49,7 @@ describe('UserRepository', () => {
           salt: expect.any(String),
           tasks: [],
           projects: [],
+          boards: [],
         },
       ]);
     });
