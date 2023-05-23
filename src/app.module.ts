@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import 'dotenv/config';
 import { LoggerModule } from 'nestjs-pino';
 import { AuthModule } from './auth/auth.module';
+import { BoardsModule } from './boards/boards.module';
 import { ProjectsModule } from './projects/projects.module';
 import { ApiConfigService } from './shared/api-config.service';
 import { SharedModule } from './shared/shared.module';
@@ -36,6 +37,7 @@ import { TasksModule } from './tasks/tasks.module';
     TasksModule,
     AuthModule,
     ProjectsModule,
+    BoardsModule,
   ],
 })
 export class AppModule {}

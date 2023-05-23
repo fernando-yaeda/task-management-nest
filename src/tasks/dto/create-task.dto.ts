@@ -1,6 +1,7 @@
 import {
   IsDateString,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -17,4 +18,8 @@ export class CreateTaskDTO {
   @IsOptional()
   @IsDateString()
   dueDate?: string | null;
+
+  @IsNotEmpty()
+  @IsNumber()
+  boardId?: number;
 }
