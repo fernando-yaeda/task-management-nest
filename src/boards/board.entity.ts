@@ -21,13 +21,13 @@ export class Board extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @ManyToOne((_type) => User, (user) => user.boards, { eager: false })
+  @ManyToOne((_type) => User, (user) => user.boards)
   user: User;
 
-  @ManyToOne((_type) => Project, (project) => project.boards, { eager: false })
+  @ManyToOne((_type) => Project, (project) => project.boards)
   project: Project;
 
-  @OneToMany((_type) => Task, (task) => task.board, { eager: true })
+  @OneToMany((_type) => Task, (task) => task.board)
   tasks: Task[];
 
   @Column()
