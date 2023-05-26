@@ -20,10 +20,10 @@ export class Project extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @ManyToOne((_type) => User, (user) => user.projects, { eager: false })
+  @ManyToOne((_type) => User, (user) => user.projects)
   user: User;
 
-  @OneToMany((_type) => Board, (board) => board.project, { eager: true })
+  @OneToMany((_type) => Board, (board) => board.project)
   boards: Board[];
 
   @Column()
