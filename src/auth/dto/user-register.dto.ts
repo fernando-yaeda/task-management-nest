@@ -2,38 +2,40 @@ import {
   IsEmail,
   IsNotEmpty,
   IsString,
-  Matches,
   MaxLength,
   MinLength,
   Validate,
 } from 'class-validator';
 import { IsUniqueConstraint } from '../validators/is-unique';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class AuthCredentialsDTO {
+export class UserRegisterDTO {
+  @ApiProperty()
   @IsString()
   @MinLength(6)
   @MaxLength(16)
   @Validate(IsUniqueConstraint, ['username'])
   username: string;
 
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   firstName: string;
 
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   lastName: string;
 
+  @ApiProperty()
   @IsString()
   @IsEmail()
   @Validate(IsUniqueConstraint, ['email'])
   email: string;
 
+  @ApiProperty()
   @IsString()
   @MinLength(8)
   @MaxLength(16)
-  @Matches(/((?=.*\d)|(?=.*\W))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'password is too weak',
-  })
   password: string;
 }

@@ -1,8 +1,8 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../app.module';
-import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
-import { SignInDTO } from './dto/sign-in.dto';
+import { UserRegisterDTO } from './dto/user-register.dto';
+import { UserLoginDTO } from './dto/user-login.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
@@ -10,7 +10,7 @@ describe('UserRepository', () => {
   let userRepository: UserRepository;
   let module: TestingModule;
 
-  const authCredentialsDto: AuthCredentialsDTO = {
+  const userRegisterDto: UserRegisterDTO = {
     username: 'username',
     firstName: 'firstName',
     lastName: 'lastName',
@@ -18,7 +18,7 @@ describe('UserRepository', () => {
     password: 'password',
   };
 
-  const signInDto: SignInDTO = {
+  const userLoginDto: UserLoginDTO = {
     email: 'email@email.com',
     password: 'password',
   };
@@ -36,7 +36,7 @@ describe('UserRepository', () => {
     it('should create a new user', async () => {
       await expect(userRepository.count()).resolves.toEqual(0);
 
-      await userRepository.signUp(authCredentialsDto);
+      await userRepository.signUp(userRegisterDto);
 
       await expect(userRepository.find({ where: { id: 1 } })).resolves.toEqual([
         {
@@ -47,9 +47,6 @@ describe('UserRepository', () => {
           email: 'email@email.com',
           password: expect.any(String),
           salt: expect.any(String),
-          tasks: [],
-          projects: [],
-          boards: [],
         },
       ]);
     });
@@ -58,21 +55,21 @@ describe('UserRepository', () => {
       jest.spyOn(userRepository, 'save').mockRejectedValue({ code: '99999' });
 
       await expect(userRepository.count()).resolves.toEqual(0);
-      await expect(userRepository.signUp(authCredentialsDto)).rejects.toThrow(
+      await expect(userRepository.signUp(userRegisterDto)).rejects.toThrow(
         InternalServerErrorException,
       );
     });
   });
 
   describe('validateUserPassword', () => {
-    let user;
+    let user: User;
 
     beforeEach(() => {
       user = new User();
       user.username = 'username';
       user.firstName = 'firstName';
       user.lastName = 'lastName';
-      user.email = signInDto.email;
+      user.email = userLoginDto.email;
       user.validatePassword = jest.fn();
     });
 
@@ -80,7 +77,7 @@ describe('UserRepository', () => {
       jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(user);
       jest.spyOn(user, 'validatePassword').mockResolvedValue(true);
 
-      const result = await userRepository.validateUserPassword(signInDto);
+      const result = await userRepository.validateUserPassword(userLoginDto);
 
       expect(result).toEqual(user);
     });
@@ -88,7 +85,7 @@ describe('UserRepository', () => {
     it('should return null when user is not found', async () => {
       jest.spyOn(userRepository, 'findOneBy').mockReturnValue(undefined);
 
-      const result = await userRepository.validateUserPassword(signInDto);
+      const result = await userRepository.validateUserPassword(userLoginDto);
 
       expect(user.validatePassword).not.toHaveBeenCalled();
       expect(result).toEqual(null);
@@ -98,7 +95,7 @@ describe('UserRepository', () => {
       jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(user);
       jest.spyOn(user, 'validatePassword').mockResolvedValue(false);
 
-      const result = await userRepository.validateUserPassword(signInDto);
+      const result = await userRepository.validateUserPassword(userLoginDto);
 
       expect(result).toEqual(null);
     });
