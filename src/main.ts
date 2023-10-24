@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ValidationError, useContainer } from 'class-validator';
-import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { ApiConfigService } from './shared/api-config.service';
 import { SharedModule } from './shared/shared.module';
@@ -20,20 +19,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.useLogger(app.get(Logger));
-
-  app.useGlobalInterceptors(new LoggerErrorInterceptor());
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      exceptionFactory: (validationErrors: ValidationError[]) => {
-        const errorMessage = validationErrors[0]?.constraints?.matches;
-        if (errorMessage) {
-          throw new BadRequestException(errorMessage);
-        }
-      },
-      stopAtFirstError: true,
     }),
   );
 

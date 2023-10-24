@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { DataSource, Repository } from 'typeorm';
-import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
-import { SignInDTO } from './dto/sign-in.dto';
+import { UserRegisterDTO } from './dto/user-register.dto';
+import { UserLoginDTO } from './dto/user-login.dto';
 import { User } from './user.entity';
 
 @Injectable()
@@ -15,9 +15,8 @@ export class UserRepository extends Repository<User> {
     return bcrypt.hash(password, salt);
   }
 
-  async signUp(authCredentialsDto: AuthCredentialsDTO): Promise<void> {
-    const { username, firstName, lastName, email, password } =
-      authCredentialsDto;
+  async signUp(userRegisterDTO: UserRegisterDTO): Promise<void> {
+    const { username, firstName, lastName, email, password } = userRegisterDTO;
 
     const user = this.create();
     user.username = username;
@@ -35,9 +34,9 @@ export class UserRepository extends Repository<User> {
   }
 
   async validateUserPassword(
-    signInDto: SignInDTO,
+    userLoginDTO: UserLoginDTO,
   ): Promise<Omit<User, 'password' | 'salt' | 'tasks'> | null> {
-    const { email, password } = signInDto;
+    const { email, password } = userLoginDTO;
     const user = await this.findOneBy({ email });
 
     if (user && (await user.validatePassword(password))) {

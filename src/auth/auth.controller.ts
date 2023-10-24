@@ -2,27 +2,37 @@ import {
   Body,
   ConflictException,
   Controller,
+  HttpCode,
+  HttpStatus,
   Post,
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthCredentialsDTO } from './dto/auth-credentials.dto';
-import { SignInResultDTO } from './dto/sign-in-result.dto';
-import { SignInDTO } from './dto/sign-in.dto';
+import { UserRegisterDTO } from './dto/user-register.dto';
+import { LoginResultDTO } from './dto/login-result.dto';
+import { UserLoginDTO } from './dto/user-login.dto';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/signup')
-  sighUp(
-    @Body(ValidationPipe) authCredentialsDto: AuthCredentialsDTO,
+  @Post('register')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ description: 'Successfully Registered' })
+  async userRegister(
+    @Body(ValidationPipe) userRegisterDto: UserRegisterDTO,
   ): Promise<void | ConflictException> {
-    return this.authService.signUp(authCredentialsDto);
+    return await this.authService.signUp(userRegisterDto);
   }
 
-  @Post('/signin')
-  signIn(@Body(ValidationPipe) signInDto: SignInDTO): Promise<SignInResultDTO> {
-    return this.authService.signIn(signInDto);
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ type: LoginResultDTO })
+  async userLogin(
+    @Body(ValidationPipe) userLoginDto: UserLoginDTO,
+  ): Promise<LoginResultDTO> {
+    return await this.authService.signIn(userLoginDto);
   }
 }

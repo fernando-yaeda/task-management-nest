@@ -1,6 +1,6 @@
 import { User } from '../user.entity';
 
-export class SignInResultDTO {
+export class LoginResultDTO {
   user: Omit<User, 'password' | 'salt' | 'tasks'>;
   token: string;
 }
